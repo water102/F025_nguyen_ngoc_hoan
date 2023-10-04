@@ -1,0 +1,30 @@
+.container {
+  background-color: rgb(27, 27, 27);
+  border-radius: 16px;
+  color: rgb(155, 155, 155);
+  font-size: 14px;
+  font-weight: 500;
+  height: 120px;
+  line-height: 20px;
+  padding: 16px;
+}
+
+.input {
+  font-size: 36px;
+  font-weight: 485;
+  max-height: 44px;
+
+  outline: none;
+  border: none;
+  background-color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0px;
+  @apply text-white;
+}
+
+.tokenIcon {
+  width: 24px;
+  height: 24px;
+}

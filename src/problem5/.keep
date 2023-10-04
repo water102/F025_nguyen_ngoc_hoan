@@ -1,0 +1,4 @@
+I still fulltime job. That is why I haven't time to implement it. It's really basic. So, I think the chatgPT prompt is enough.
+
+chatGpt prompt:
+write code ExpressJS, and Typeorm to build a set of CRUD restful APIs. Use TypeScript for program language. Define swagger document and dummy data for testing. The database should be mysql. Config docker-compose then connect the service to the database. The query API should have search  params for filter and pagination
