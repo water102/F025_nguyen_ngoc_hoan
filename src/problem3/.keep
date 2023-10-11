@@ -1,26 +1,25 @@
-There are several computational inefficiencies and anti-patterns in the provided code block:
+// There are several computational inefficiencies and anti-patterns in the provided code block:
 
-Inefficient Priority Calculation:
+// Inefficient Priority Calculation:
 
-The getPriority function calculates priority for each blockchain on every render. This computation is unnecessary since the priorities are constant and do not change during component rendering.
-Redundant Filtering:
+// The getPriority function calculates priority for each blockchain on every render. This computation is unnecessary since the priorities are constant and do not change during component rendering.
+// Redundant Filtering:
 
-The sortedBalances array is filtered based on a condition (lhsPriority) that is not defined within the code. This will likely result in errors or unexpected behavior.
-The filtering logic also checks balance.amount <= 0 without a clear purpose, making the condition seem redundant.
-Redundant Mapping:
+// The sortedBalances array is filtered based on a condition (lhsPriority) that is not defined within the code. This will likely result in errors or unexpected behavior.
+// The filtering logic also checks balance.amount <= 0 without a clear purpose, making the condition seem redundant.
+// Redundant Mapping:
 
-The formattedBalances array is created by mapping sortedBalances to add a formatted property to each balance. This mapping can be done more efficiently during the sorting step, eliminating the need for an additional mapping operation.
-No Handling of Missing Data:
+// The formattedBalances array is created by mapping sortedBalances to add a formatted property to each balance. This mapping can be done more efficiently during the sorting step, eliminating the need for an additional mapping operation.
+// No Handling of Missing Data:
 
-There is no error handling or validation for missing or undefined data, such as prices[balance.currency]. This can lead to runtime errors if the data is not present.
-Missing Dependencies:
+// There is no error handling or validation for missing or undefined data, such as prices[balance.currency]. This can lead to runtime errors if the data is not present.
+// Missing Dependencies:
 
-The useMemo hook depends on the balances and prices variables, but these dependencies are not declared in the hook's dependency array.
-Inefficient Component Key Usage:
+// The useMemo hook depends on the balances and prices variables, but these dependencies are not declared in the hook's dependency array.
+// Inefficient Component Key Usage:
 
-The key prop for the WalletRow component uses the index of the array as the key. This can lead to issues with React's reconciliation algorithm if items are added or removed from the array, as it relies on stable keys for efficient updates.
-Here's a refactored version of the code to address these issues:
-
+// The key prop for the WalletRow component uses the index of the array as the key. This can lead to issues with React's reconciliation algorithm if items are added or removed from the array, as it relies on stable keys for efficient updates.
+// Here's a refactored version of the code to address these issues:
 
 
 
@@ -53,25 +52,24 @@ const WalletPage: React.FC<Props> = ({ children, ...rest }: Props) => {
   const balances = useWalletBalances();
   const prices = usePrices();
 
-  const sortedBalances = useMemo(() => {
+  const formattedBalances: FormattedWalletBalance[] = useMemo(() => {
     return balances
       .filter((balance: WalletBalance) => balance.blockchain in blockchainPriorities)
       .sort((lhs: WalletBalance, rhs: WalletBalance) => {
         const leftPriority = blockchainPriorities[lhs.blockchain];
         const rightPriority = blockchainPriorities[rhs.blockchain];
         return rightPriority - leftPriority; // Sort in descending order
-      });
-  }, [balances, blockchainPriorities]);
-
-  const formattedBalances: FormattedWalletBalance[] = sortedBalances.map((balance: WalletBalance) => {
-    const formatted = balance.amount.toFixed();
-    const usdValue = prices[balance.currency] * balance.amount;
-    return {
-      ...balance,
-      formatted,
-      usdValue,
-    };
-  });
+      })
+      .map((balance: WalletBalance) => {
+       const formatted = balance.amount.toFixed();
+       const usdValue = prices[balance.currency] * balance.amount;
+       return {
+         ...balance,
+         formatted,
+         usdValue,
+       };
+     });
+  }, [balances, blockchainPriorities, prices]);
 
   const rows = formattedBalances.map((balance: FormattedWalletBalance, index: number) => (
     <WalletRow
@@ -91,9 +89,9 @@ const WalletPage: React.FC<Props> = ({ children, ...rest }: Props) => {
 
 
 
-In the refactored code:
+// In the refactored code:
 
-Blockchain priorities are defined as a constant map to avoid unnecessary calculations.
-Redundant filtering is removed, and the sorting operation is optimized to sort balances in descending order based on priority.
-formattedBalances is created by mapping the sorted balances, combining the formatting and USD value calculation.
-The key prop for WalletRow is based on a unique property of each balance, avoiding issues with React's reconciliation.
+// Blockchain priorities are defined as a constant map to avoid unnecessary calculations.
+// Redundant filtering is removed, and the sorting operation is optimized to sort balances in descending order based on priority.
+// formattedBalances is created by mapping the sorted balances, combining the formatting and USD value calculation.
+// The key prop for WalletRow is based on a unique property of each balance, avoiding issues with React's reconciliation.
